@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">First_App</string>
+    <string name="app_name">Live_Data</string>
     <string name="title_golfcourse_detail">Golfcourse Detail</string>
     <string name="title_golfcourse_list">Golfcourse List</string>
 
