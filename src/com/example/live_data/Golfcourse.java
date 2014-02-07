@@ -1,4 +1,4 @@
-package com.example.first_app;
+package com.example.live_data;
 
 import android.os.Parcel;
 import android.os.Parcelable;

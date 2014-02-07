@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.first_app.GolfcourseListActivity"
+            android:name="com.example.live_data.GolfcourseListActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,9 +23,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.first_app.GolfcourseDetailActivity"
+            android:name="com.example.live_data.GolfcourseDetailActivity"
             android:label="@string/title_golfcourse_detail"
-            android:parentActivityName=".GolfcourseListActivity" >
+            android:parentActivityName="com.example.live_data.GolfcourseListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".GolfcourseListActivity" />

@@ -1,16 +1,19 @@
-package com.example.first_app;
+package com.example.live_data;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+
+import com.example.first_app.R;
 
 
 public class GolfcourseDetailActivity extends FragmentActivity {
