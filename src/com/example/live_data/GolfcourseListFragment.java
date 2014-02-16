@@ -13,9 +13,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 
-public class GolfcourseListFragment extends ListFragment {
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+
+public class GolfcourseListFragment extends ListFragment implements 
+	LoaderManager.LoaderCallbacks<ArrayList<Golfcourse>>{
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
@@ -23,6 +28,9 @@ public class GolfcourseListFragment extends ListFragment {
     private int mActivatedPosition = ListView.INVALID_POSITION;
     
     private ArrayList<Golfcourse> courses = new ArrayList<Golfcourse>();
+    private String live_data_url = "http://jason.mobileappdocs.com/live-data";
+    
+    ArrayAdapter<Golfcourse> adapter = null;
 
     public interface Callbacks {
 
@@ -36,7 +44,7 @@ public class GolfcourseListFragment extends ListFragment {
 //        public void onItemSelected(String id) {
         }
     };
-
+   
     public GolfcourseListFragment() {
     }
 
@@ -49,11 +57,14 @@ public class GolfcourseListFragment extends ListFragment {
             Log.v("myApp", "List Fragment: argument first course:" + courses.get(1).name);
         }
 
-        setListAdapter(new ArrayAdapter<Golfcourse>(getActivity(),
-                R.layout.simple_list_item_activated_1,
-                R.id.text1,
-                courses));
-    }
+       adapter = new ArrayAdapter<Golfcourse>(getActivity(),
+               R.layout.simple_list_item_activated_1,
+               R.id.text1,
+               courses);
+        setListAdapter(adapter);
+        
+        getActivity().getSupportLoaderManager().initLoader(0, null, this).forceLoad();
+    	}
     
 
 
@@ -114,4 +125,38 @@ public class GolfcourseListFragment extends ListFragment {
 
         mActivatedPosition = position;
     }
+	// Loader callbacks
+	
+	@Override
+	public Loader<ArrayList<Golfcourse>> onCreateLoader(
+			int arg0, Bundle arg1) {
+		// TODO Auto-generated method stub
+		Log.v("myapp", "Loader created.");
+		return new LiveDataLoader(getActivity() , live_data_url);
+	}
+
+	@Override
+	public void onLoadFinished(
+			Loader<ArrayList<Golfcourse>> arg0,
+			ArrayList<Golfcourse> coursesOnline) {
+		// TODO Auto-generated method stub
+		if (coursesOnline.equals(courses)) {
+			Log.v("myapp", "The online courses have already been downloaded.");
+		}
+		else {
+			// Update data and notify adapter
+	    	courses.clear();
+	    	courses.addAll(coursesOnline);
+	    	adapter.notifyDataSetChanged();
+	    //	((GolfcourseListActivity) getActivity()).
+		}
+		Log.v("myapp", "Loader results: " + coursesOnline);
+
+	};
+
+	@Override
+	public void onLoaderReset(
+			Loader<ArrayList<Golfcourse>> arg0) {
+		// TODO Auto-generated method stub		
+	}
 }

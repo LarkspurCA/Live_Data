@@ -1,0 +1,5 @@
+ 
+	[
+    {"name":"Presidio Golf Club", "city":"San Francisco, CA"},
+    {"name":"Rooster Run Golf Club", "city":"Petaluma, CA"}
+  	]

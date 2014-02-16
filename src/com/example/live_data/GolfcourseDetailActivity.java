@@ -13,7 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
-import com.example.first_app.R;
+import com.example.live_data.R;
 
 
 public class GolfcourseDetailActivity extends FragmentActivity {

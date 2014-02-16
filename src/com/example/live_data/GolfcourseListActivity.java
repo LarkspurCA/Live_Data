@@ -1,38 +1,45 @@
 package com.example.live_data;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-
-import com.example.first_app.R;
+import com.example.live_data.R;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.content.Context;
+import android.os.StrictMode;
+import android.support.v4.content.Loader;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
 import android.util.Log;
 
 public class GolfcourseListActivity extends FragmentActivity
         implements GolfcourseListFragment.Callbacks {
 
     private boolean mTwoPane;
-
+    private DataModel dataModel;
+    
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         // Create data model and initialize with golf courses
-        ArrayList<Golfcourse> courses = new DataModel("courses.txt").getCourses();
+        dataModel = new DataModel(this, "courses.txt");
 
-    	FragmentManager fm = getSupportFragmentManager();
-    	Log.v("myApp", "List Activity: R.Layout.activity_golfcourse_list: " + R.layout.activity_golfcourse_list);
+     	FragmentManager fm = getSupportFragmentManager();
+
         setContentView(R.layout.activity_golfcourse_list);
 
         if (findViewById(R.id.golfcourse_detail_container) != null) {
@@ -51,24 +58,21 @@ public class GolfcourseListActivity extends FragmentActivity
         	else {
         		Log.v("myApp", "List Activity, Use existing Detail Fragment " + df);	
         	}
-
         }
         
-        // Initialize the golfcourse list fragment
+        // Initialize and display the golfcourse list fragment
       
         	GolfcourseListFragment cf = (GolfcourseListFragment) fm.findFragmentByTag("List");
         	if ( cf == null) {
         		cf = new GolfcourseListFragment();
             	Bundle arguments = new Bundle();
-            	arguments.putParcelableArrayList("courses", courses);
+            	arguments.putParcelableArrayList("courses", dataModel.getCourses());
             	cf.setArguments(arguments);           	
-        		Log.v("myApp", "List Activity: Create a new List Fragment " + cf);
             	fm.beginTransaction().replace(R.id.golfcourse_list, cf, "List").commit();
         	}
         	else {
         		Log.v("myApp", "List Activity: Use existing List Fragment " + cf);
         	}
-
     }
    
 
@@ -77,13 +81,11 @@ public class GolfcourseListActivity extends FragmentActivity
 	return null;
 }
 
-
 	@Override
 //    public void onItemSelected(String id) {
 	public void onItemSelected(Golfcourse c) {
         if (mTwoPane) {
             Bundle arguments = new Bundle();
-//            arguments.putString(GolfcourseDetailFragment.ARG_ITEM_ID, id);
             arguments.putParcelable("course", c);
             GolfcourseDetailFragment fragment = new GolfcourseDetailFragment();
             fragment.setArguments(arguments);
@@ -93,44 +95,48 @@ public class GolfcourseListActivity extends FragmentActivity
 
         } else {
             Intent detailIntent = new Intent(this, GolfcourseDetailActivity.class);
-//            detailIntent.putExtra(GolfcourseDetailFragment.ARG_ITEM_ID, id);
             detailIntent.putExtra("course", c);
             startActivity(detailIntent);
         }
     }
+		
+}
+
+ class DataModel {
 	
-	// Define a class to handle the custom data
-	// Initially, just reads a file and returns an array of objects
-    
-	class DataModel {
-		
-        final ArrayList<Golfcourse> coursesArray = new ArrayList<Golfcourse>();
-		
-        // Initializer to read a text file into an array of golfcourse objects    
-		public DataModel(String coursesFilename) {
-	        String line;
-	        BufferedReader br;
-	        
-	        try{
-	        	br = new BufferedReader(new InputStreamReader(getResources().getAssets().open(coursesFilename)));
+    private ArrayList<Golfcourse> coursesArray = new ArrayList<Golfcourse>();
 	
-	        	while((line = br.readLine()) != null) {
-	        		StringTokenizer sTok = new StringTokenizer(line, ":");
-	        		Golfcourse gc = new Golfcourse(sTok.nextToken());
-	        		gc.address = sTok.nextToken();
-	        		coursesArray.add(gc);
-	        		Log.v("myapp", gc.name + ", " + gc.address);
-	        	}
-	        }
-	        catch (IOException e){
-	        	Log.v("myapp", e.getMessage());
-	        }	
-			
-		}
-		
-		// Method to retrieve courses
-	    public ArrayList<Golfcourse> getCourses() {
-	    	return coursesArray;
-	    }
+    // Initializer to read a text file into an array of golfcourse objects    
+	public DataModel(Context ctx, String coursesFilename) {
+        String line;
+        BufferedReader br;
+    	String coursesJson = ""; 
+    	
+        // REad json string from file
+        try{
+        	br = new BufferedReader(new InputStreamReader(ctx.getResources().getAssets().open("courses-json.txt")));
+        	
+        	while((line = br.readLine()) != null) {
+        		coursesJson += line;
+        	}	
+        }
+        catch (IOException e){
+        	Log.v("myapp", e.getMessage());
+        }
+	
+        // Parse the JSON, which contains an array of Golfcourse objects
+        Type collectionType = new TypeToken<ArrayList<Golfcourse>>(){}.getType();
+        coursesArray = new Gson().fromJson(coursesJson, collectionType);
 	}
+	
+	// Getter to retrieve courses
+    public ArrayList<Golfcourse> getCourses() {
+    	return coursesArray;     
+  }
+    
+    // Setter to update courses
+    public ArrayList<Golfcourse> setCourses(ArrayList<Golfcourse> courses) {
+    	this.coursesArray = courses;
+    	return coursesArray;
+    }
 }

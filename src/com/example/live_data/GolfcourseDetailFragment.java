@@ -2,7 +2,7 @@ package com.example.live_data;
 
 import java.util.ArrayList;
 
-import com.example.first_app.R;
+import com.example.live_data.R;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
